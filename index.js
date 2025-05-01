@@ -1,11 +1,10 @@
-const express = require('express');
-const ffmpegPath = require('ffmpeg-static');
-const ffmpeg = require('fluent-ffmpeg');
-ffmpeg.setFfmpegPath(ffmpegPath);
-const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
-const { v4: uuidv4 } = require('uuid');
+import express from 'express';
+import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
+import ffprobe from '@ffprobe-installer/ffprobe'
+import axios from 'axios';
+import * as fs from 'fs';
+import * as path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
 const app = express();
 app.use(express.json());
@@ -18,6 +17,18 @@ if (!fs.existsSync(uploadsDir)) {
 
 if (!fs.existsSync(outputsDir)) {
   fs.mkdirSync(outputsDir);
+}
+
+function executeFFmpegCommand(command) {
+  return new Promise((resolve, reject) => {
+      exec(command, { cwd: '/tmp' }, (error, stdout, stderr) => {
+          if (error) {
+              reject(error);
+          } else {
+              resolve(stdout);
+          }
+      });
+  });
 }
 
 app.post('/convert', async (req, res) => {
@@ -57,22 +68,16 @@ app.post('/convert', async (req, res) => {
     
     const conversionStartTime = Date.now();
     
-    await new Promise((resolve, reject) => {
-      ffmpeg(mp4Path)
-        .output(mp3Path)
-        .noVideo()
-        .audioCodec('libmp3lame')
-        .on('end', () => {
-          console.log('Conversion finished');
-          resolve();
-        })
-        .on('error', (err) => {
-          console.error('Error during conversion:', err);
-          reject(err);
-        })
-        .run();
-    });
-    
+ 
+    executeFFmpegCommand(`${ffmpegPath} -i ${mp4Path} -vn -ar 44100 -ac 2 -b:a 192k ${mp3Path}`)
+      .then(() => {
+        console.log(`File converted successfully to: ${mp3Path}`);
+      })
+      .catch((error) => {
+        console.error('Error during conversion:', error);
+        return res.status(500).json({ error: 'Conversion failed', details: error.message });
+      });
+      
 
     const conversionTime = (Date.now() - conversionStartTime) / 1000; // in seconds
     
