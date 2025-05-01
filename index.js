@@ -1,6 +1,6 @@
 import express from 'express';
 import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
-import ffprobe from '@ffprobe-installer/ffprobe'
+// import ffprobe from '@ffprobe-installer/ffprobe'
 import axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -77,7 +77,7 @@ app.post('/convert', async (req, res) => {
         console.error('Error during conversion:', error);
         return res.status(500).json({ error: 'Conversion failed', details: error.message });
       });
-      
+
 
     const conversionTime = (Date.now() - conversionStartTime) / 1000; // in seconds
     
