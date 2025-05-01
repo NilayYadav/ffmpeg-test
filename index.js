@@ -30,62 +30,59 @@ function executeFFmpegCommand(command) {
       });
   });
 }
-
 app.post('/convert', async (req, res) => {
   try {
     const { url } = req.body;
-    
+
     if (!url) {
       return res.status(400).json({ error: 'URL is required' });
     }
-    
+
     const startTime = Date.now();
-    
     const fileId = uuidv4();
     const mp4Path = path.join(uploadsDir, `${fileId}.mp4`);
     const mp3Path = path.join(outputsDir, `${fileId}.mp3`);
-    
-    // Start timing the download
+
+  
     const downloadStartTime = Date.now();
-    
     const response = await axios({
       method: 'GET',
       url: url,
       responseType: 'stream'
     });
-    
+
     const writer = fs.createWriteStream(mp4Path);
-    
     response.data.pipe(writer);
-    
+
     await new Promise((resolve, reject) => {
       writer.on('finish', resolve);
       writer.on('error', reject);
     });
-    
+
     const downloadTime = (Date.now() - downloadStartTime) / 1000;
-    console.log(`File downloaded successfully to: ${mp4Path} in ${downloadTime} seconds`);
-    
+    console.log(`File downloaded to: ${mp4Path} in ${downloadTime}s`);
+
+
     const conversionStartTime = Date.now();
-    
- 
-    executeFFmpegCommand(`${ffmpegPath} -i ${mp4Path} -vn -ar 44100 -ac 2 -b:a 192k ${mp3Path}`)
-      .then(() => {
-        console.log(`File converted successfully to: ${mp3Path}`);
-      })
-      .catch((error) => {
-        console.error('Error during conversion:', error);
-        return res.status(500).json({ error: 'Conversion failed', details: error.message });
-      });
+    try {
+      await executeFFmpegCommand(`${ffmpegPath} -i ${mp4Path} -vn -ar 44100 -ac 2 -b:a 192k ${mp3Path}`);
+      console.log(`File converted to: ${mp3Path}`);
+    } catch (error) {
+      console.error('Conversion error:', error);
+      return res.status(500).json({ error: 'Conversion failed', details: error.message });
+    }
+
+    const conversionTime = (Date.now() - conversionStartTime) / 1000;
+    const totalProcessingTime = (Date.now() - startTime) / 1000;
 
 
-    const conversionTime = (Date.now() - conversionStartTime) / 1000; // in seconds
-    
-    const totalProcessingTime = (Date.now() - startTime) / 1000; // in seconds
-    
+    if (!fs.existsSync(mp3Path)) {
+      return res.status(500).json({ error: 'MP3 file was not created' });
+    }
+
     const mp4Size = fs.statSync(mp4Path).size;
     const mp3Size = fs.statSync(mp3Path).size;
-    
+
     res.status(200).json({
       success: true,
       message: 'Conversion successful',
@@ -102,7 +99,7 @@ app.post('/convert', async (req, res) => {
       },
       fileId: fileId
     });
-    
+
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: 'Conversion failed', details: error.message });
