@@ -7,8 +7,8 @@ const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 app.use(express.json());
-const uploadsDir = path.join(__dirname, 'uploads');
-const outputsDir = path.join(__dirname, 'outputs');
+const uploadsDir = '/tmp/uploads';
+const outputsDir = '/tmp/outputs';
 
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir);
