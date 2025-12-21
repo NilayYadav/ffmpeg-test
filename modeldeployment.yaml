@@ -1,0 +1,11 @@
+apiVersion: ml.sarvam.ai/v1alpha1
+kind: ModelDeployment
+metadata:
+  name: test
+  namespace: models-staging
+spec:
+  image: nvcr.io/myorg/models/my-model:v1.0.0
+  tensorParallelism: 1
+  instanceType: H100_1x
+  replicas: 1
+  maxConcurrency: 10
