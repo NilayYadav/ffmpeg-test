@@ -1,0 +1,18 @@
+apiVersion: nvcf.nvidia.com/v1alpha1
+kind: ModelDeployment
+metadata:
+  name: h
+  namespace: models-staging
+  annotations:
+    backstage.io/created-by: 
+    backstage.io/created-at: "${{ '' | now }}"
+spec:
+  image: h
+  tensorParallelism: 1
+  instanceType: H100_1x
+  replicas: 1
+  maxConcurrency: 10
+  health:
+    uri: /health
+    protocol: HTTP
+    port: 8000
