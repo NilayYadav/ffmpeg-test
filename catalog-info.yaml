@@ -1,0 +1,17 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: tets
+  description: NVCF Model Deployment for tets
+  annotations:
+    backstage.io/created-by: 
+    argocd/app-name: models-staging-tets
+  tags:
+    - nvcf
+    - model-deployment
+    - models-staging
+spec:
+  type: model-deployment
+  lifecycle: production
+  owner: 
+  system: nvcf-platform
