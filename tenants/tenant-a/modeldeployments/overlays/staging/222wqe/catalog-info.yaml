@@ -1,0 +1,21 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: llama2
+  title: llama2
+  description: NVCF Model Deployment - llama2
+  annotations:
+    github.com/project-slug: nilayyadav/ffmpeg-test
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - model
+    - llama2
+spec:
+  type: ml-model
+  lifecycle: experimental
+  owner: nilay
+  system: nvcf-platform
+  
+  # Custom fields for model metadata
+  deployment:
+    image: something
