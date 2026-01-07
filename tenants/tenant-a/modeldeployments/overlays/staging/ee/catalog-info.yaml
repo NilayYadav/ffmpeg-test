@@ -1,0 +1,31 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ee
+  title: ee
+  description: NVCF Model Deployment - ee
+  annotations:
+    # github.com/project-slug: sarvamai/pravah-sarvam-model-gitops
+    github.com/project-slug: nilayyadav/ffmpeg-test
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - model
+    - nvcf
+    - staging
+  links:
+    # - url: https://github.com/sarvamai/pravah-sarvam-model-gitops/tree/main/tenants/tenant-a/modeldeployments/overlays/staging/ee
+    - url: https://github.com/nilayyadav/ffmpeg-test/tree/main/tenants/tenant-a/modeldeployments/overlays/staging/ee
+      title: GitOps Configuration
+      icon: github
+spec:
+  type: model
+  lifecycle: experimental
+  owner: 
+  
+  deployment:
+    image: nvcr.io/myorg/models/my-model:v1.0.0
+    namespace: staging
+    instanceType: H100_1x
+    tensorParallelism: 1
+    replicas: 1
+    maxConcurrency: 10
