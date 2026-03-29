@@ -1,0 +1,17 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: h
+  description: NVCF Model Deployment for h
+  annotations:
+    backstage.io/created-by: 
+    argocd/app-name: models-staging-h
+  tags:
+    - nvcf
+    - model-deployment
+    - models-staging
+spec:
+  type: model-deployment
+  lifecycle: production
+  owner: 
+  system: nvcf-platform
